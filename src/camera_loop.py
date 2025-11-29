@@ -1,34 +1,12 @@
-# 영상 > 프레임단위로 끊기
+# 카메라 초기화 & 프레임 캡쳐
 
-import cv2
-
-def start_camera_loop():
-    # 1 > 외부 웹캠
-    cap = cv2.VideoCapture(0)
-
-    if not cap.isOpened():
-        print("카메라를 열 수 없습니다.")
-        return
-    
-    print("Camera Loop Started (ESC 누르면 종료)")
-
-    while True:
-        ret, frame = cap.read()
-
-        if not ret:
-            print("프레임을 읽어올 수 없습니다.")
-            break
-
-        # 화면에 현재 프레임 띄우기
-        cv2.imshow("Terrius Camera", frame)
-
-        # ESC(27) 누르면 종료
-        if cv2.waitKey(0) & 0xFF == 27:
-            break
-
-    cap.release()
-    cv2.destroyAllWindows()   
-
-# 파일을 직접 실행해야 카메라 ON
-if __name__ == "__main__":
-    start_camera_loop()
+# 카메라 해상도 세팅값 반환
+def init_camera() :
+    cap = cv2.VideoCapture(1) 
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    return cap
+# 카메라에서 한장의 프레임을 읽어 반환
+def get_frame(cap)
+    ret, frame = cap.read() # ret은 프레임을 제대로 읽었는지 확인
+    return frame
