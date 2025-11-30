@@ -6,7 +6,7 @@ from tensorflow.keras.models import load_model
 model = load_model("D:/Terrius/models/mnist_cnn.h5")
 print("CNN 모델 로드 완료")
 
-def predict_digit(img_28x28):
+def predict_digit(img):
     
     # img_28x28 : (28, 28) 또는 (28, 28, 1) 형태의 흑백이미지
     # img_28x28 전처리 완료 at preprocessing
