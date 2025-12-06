@@ -2,6 +2,7 @@
 import cv2
 
 # 카메라 해상도 세팅값 반환
+# 카메라 해상도는 숫자 인식에 유리한 640x480 설정
 def init_camera():
     cap = cv2.VideoCapture(0) 
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)

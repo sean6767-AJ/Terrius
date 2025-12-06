@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
-from camera_module import init_camera, get_frame
-from preprocessing import preprocess_frame
-from inference import predict_digit
+from Camera_set import init_camera, get_frame
+from preprocessing_OTSU_test import preprocessing
+from inference import predict_num
 
 def main():
     # 카메라 세팅
@@ -17,10 +17,10 @@ def main():
             continue
 
         # 2) 전처리 (28x28 흑백 이미지)
-        processed = preprocess_frame(frame)
+        processed = preprocessing(frame)
 
         # 3) CNN 예측
-        digit = predict_digit(processed)
+        digit = predict_num(processed)
 
         # 4) 프레임에 결과 그려주기
         cv2.putText(frame, f"Pred: {digit}", (20, 50),

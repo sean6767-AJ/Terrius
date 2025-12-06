@@ -18,13 +18,13 @@ def preprocess_frame(frame):
         blur,                            # Gaussian된 gray 이미지                           
         255,                             # 최대값 : 임계값 넘는 픽셀에 적용
         cv2.ADAPTIVE_THRESH_GAUSSIAN_C,  # 가우시안 가중치를 사용한 임계값 계산 방법
-        cv2.THRESH_BINARY_INV,           # 반전 : 숫자 = 흰색, 배경 = 검정(MNIST 형태)
+        cv2.THRESH_BINARY_INV,        q   # 반전 : 숫자 = 흰색, 배경 = 검정(MNIST 형태)
         11,                              # 이웃 픽셀들의 블록 크기 (블록 크기가 클수록 더 넓은 영역에서 평균 계산)
         2                                # 계산된 평균에서 뺄 값, 임계값 조정하는데 사용
     )
 
     # 숫자 내부 흰색으로 채워줌
-    kernel = np.ones((7,7), np.uint8)
+    kernel = np.ones((20,20), np.uint8)
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
 
 
