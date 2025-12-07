@@ -91,7 +91,7 @@ void Turn_Left(){
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
 
-  analogWrite(ENB, 60);
+  analogWrite(ENB, speed);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
 
@@ -106,7 +106,7 @@ void Turn_Right(){
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
 
-  analogWrite(ENB, 80);
+  analogWrite(ENB, speed);
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
 
@@ -121,9 +121,14 @@ void check_SerialCommand() {
 
     char c = Serial.read();
 
-    if (c == 'R' || c == 'L') {
+    if (state == STOPPED && (c == 'R' || c == 'L')) {
       received_cmd = c;
       state = COMMAND; // COMMAND 상태 전환
+    }
+
+    if (c == 'W') {
+      state = MOVING;
+      return;
     }
   }
 }
