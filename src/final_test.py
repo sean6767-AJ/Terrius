@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from Camera_set import init_camera, get_frame
 from preprocessing_OTSU_test import preprocessing
-from inference import predict_num
+from arduino_serial_test import predict_num
 
 def main():
     # 카메라 세팅

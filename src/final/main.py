@@ -1,13 +1,15 @@
 from Camera_set import init_camera
 from Camera_set import get_frame
 from preprocessing_OTSU_test import preprocessing
-from inference import predict_num
+from arduino_serial_test import predict_num
 from tensorflow.keras.models import load_model
 import cv2
 import serial
+import time
 
 # 아두이노 통신
-ser = serial.Serial('COM3', 9600)
+ser = serial.Serial('COM3', 19200) # 직접 test 해보니 컴퓨터 시리얼 통신은 19200
+time.sleep(2) 
 
 # 숫자 인식을 한장의 frame으로 하는 것은 정확하지 않을 수 있음
 # CNN 모델에 여러장의 frame을 입력해 그 반환값 중 가장 빈도수가 높은 값을 반환
@@ -38,16 +40,12 @@ def main():
     print("카메라 초기화 중")
     cap = init_camera()
     
-    # start_flag = True > CNN 숫자인식 시작
-    start_flag = False 
-
     print("start")
-
-    # 아두이노 회전 제어
-    # 회전 순서가 고정되어 있기 때문에 step값만 조절해주면 turn_R, turn_L 제어 가능 
-    # 숫자 인식 > R & L값 아두이노 송신 > 회전
-    commands = ["R", "L"]
-    step = 0
+    print("r > 오른쪽 회전")
+    print("l > 왼쪽 회전")
+    print("W > 전진")
+    print("s > 숫자 인식 수행")
+    print("q > 종료")
 
     while True:
         frame = get_frame(cap)
@@ -66,12 +64,20 @@ def main():
 
         key = cv2.waitKey(1) & 0xFF
         
-        # start_flag 트리거 스페이스바
-        if key == ord(' '):
-             start_flag = True
-        
-        # 숫자 인식 시작
-        if start_flag:
+        if key == ord('r'):
+             print("오른쪽 회전")
+             ser.write(b"R")
+
+        if key == ord('l'):
+             print("왼쪽 회전")
+             ser.write(b"L")
+
+        if key == ord('w'):
+             print("전진")
+             ser.write(b"W")
+    
+        # 숫자 인식 
+        if key == ord('s'):
             print("숫자 인식 시작")
 
             # lambda 함수는 get_fame() shot마다 호출
@@ -79,18 +85,6 @@ def main():
             
             print("예측된 숫자는:", number)
 
-            # 첫번 째 인식 끝 step = 0
-            # commands[step] = R > 아두이노 오른쪽 회전 제어
-            # 두번 째 인식 끝 step = 1
-            # commands[step] = L > 아두이노 왼쪽 회전 제어
-            cmd = commands[step]
-            ser.write(f"{cmd}\n".encode())
-
-            step += 1
-
-            # 다음 숫자 인식을 위해 start_flag off
-            start_flag = False
-        
         # q 누르면 종료
         if key == ord('q'):
                 break
