@@ -40,14 +40,13 @@ void Turn_Left(){
 }
 
 void Turn_Right(){
-  int speed = 250;     // 바퀴 속도
   int duration = 560;
   
-  analogWrite(ENA, speed); 
+  analogWrite(ENA, 110); 
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
 
-  analogWrite(ENB, speed);
+  analogWrite(ENB, 250);
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
 

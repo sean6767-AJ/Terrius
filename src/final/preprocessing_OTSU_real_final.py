@@ -21,12 +21,21 @@ def preprocessing(frame):
     # 1) Gray
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # 2) Blur
+    # 2) Blur   
     blur = gray
+
+    H, W = blur.shape  # 또는 frame.shape[:2]
+
+    y1 = int(H * 0.15)
+    y2 = int(H * 0.90)
+    x1 = int(W * 0.20)
+    x2 = int(W * 0.80)
+
+    roi = gray[y1:y2, x1:x2]
 
     # 3) OTSU threshold
     _, thresh = cv2.threshold(
-       blur, 0, 255,
+       roi, 0, 255,
         cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU
     )
 
@@ -34,24 +43,20 @@ def preprocessing(frame):
     kernel = np.ones((3,3), np.uint8)
     clean = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
 
-    # 5) CCL로 가장 큰 숫자 blob 선택
-    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(clean, 8)
+    # CCL로 숫자 blob 선택 (면적이 너무 큰 건 배경으로 제외)
+    # 5) 숫자 하얀 픽셀만 기준으로 crop (CCL 대신)
+    ys, xs = np.where(clean > 0)
 
-    empty = np.zeros((28,28), dtype=np.uint8)
-    if num_labels <= 1:
-        return empty.astype(np.float32)
+    if len(xs) < 10:
+        return np.zeros((28, 28), dtype=np.float32)
 
-    areas = stats[:, cv2.CC_STAT_AREA]
-    best_label = np.argmax(areas[1:]) + 1
+    min_x, max_x = np.min(xs), np.max(xs)
+    min_y, max_y = np.min(ys), np.max(ys)
 
-    x = stats[best_label, cv2.CC_STAT_LEFT]
-    y = stats[best_label, cv2.CC_STAT_TOP]
-    w = stats[best_label, cv2.CC_STAT_WIDTH]
-    h = stats[best_label, cv2.CC_STAT_HEIGHT]
-
-    digit_crop = clean[y:y+h, x:x+w]
+    digit_crop = clean[min_y:max_y+1, min_x:max_x+1]
 
     kernel = np.ones((2,2), np.uint8)
+    
     digit_crop = cv2.morphologyEx(digit_crop, cv2.MORPH_OPEN, kernel)
 
     # 6) Resize longest side = 20 (MNIST 규격)

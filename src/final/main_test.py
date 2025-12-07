@@ -1,5 +1,5 @@
 from Camera_set import init_camera, get_frame
-from OTSU_preprocessing_test import preprocessing
+from final.preprocessing_OTSU_real_real_final import preprocessing
 from inference import predict_num
 from tensorflow.keras.models import load_model
 
@@ -32,7 +32,7 @@ def stable_predict(model, get_frame, preprocessing, shots):
 def main():
 
     print("모델 로드 중...")
-    model = load_model("D:/Terrius/models/mnist_cnn_finetuned.h5")
+    model = load_model("D:/Terrius/models/mnist_cnn_finetuned2.h5")
 
     print("카메라 초기화 중...")
     cap = init_camera()

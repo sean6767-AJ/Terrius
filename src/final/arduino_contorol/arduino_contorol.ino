@@ -4,7 +4,7 @@ enum State{
   COMMAND,
 };
 
-State state = MOVING;
+State state = STOPPED;
 char received_cmd = 0;
 
 
@@ -36,7 +36,7 @@ void setup() {
   pinMode(IN3, OUTPUT);
   pinMode(IN4, OUTPUT);
 
-  Serial.begin(9600); // 아두이노 - pc 통신용
+  Serial.begin(19200); // 아두이노 - pc 통신용
 }
 
 // 초음파 센서 모듈 값을 읽어오고 거리값을 반환 하는 함수.
@@ -63,13 +63,32 @@ float read_Ultrasonic(void) {
 
 void move_forward() {
   
-  analogWrite(ENA, 100); // test 필요
+  analogWrite(ENA, 200); // test 필요
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
 
-  analogWrite(ENB, 100);
+  analogWrite(ENB, 200);
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
+}
+
+void move_backward() {
+  
+  int duration = 500;
+
+  analogWrite(ENA, 200); // test 필요
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+
+  analogWrite(ENB, 200);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+
+  delay(duration);
+
+  stop_motor();
+
+  state = STOPPED;
 }
 
 void stop_motor() {
@@ -84,33 +103,41 @@ void stop_motor() {
 }
 
 void Turn_Left(){
-  int speed = 250;
-  int duration = 530;
+
+  int duration = 680;
   
-  analogWrite(ENA, speed); // test 필요
+  analogWrite(ENA, 230); // test 필요
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
 
-  analogWrite(ENB, speed);
+  analogWrite(ENB, 230);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
 
   delay(duration);
+
+  stop_motor();
+
+  state = STOPPED;
 }
 
 void Turn_Right(){
-  int speed = 250;     // 바퀴 속도
-  int duration = 530;
+
+  int duration = 680;
   
-  analogWrite(ENA, speed); 
+  analogWrite(ENA, 230); 
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
 
-  analogWrite(ENB, speed);
+  analogWrite(ENB, 230);
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
 
   delay(duration);
+
+  stop_motor();
+
+  state = STOPPED;
 }
 
 // serial 통신 함수
@@ -130,6 +157,11 @@ void check_SerialCommand() {
       state = MOVING;
       return;
     }
+
+    if (c == 'B') {
+      move_backward();
+      return;
+    }
   }
 }
 
@@ -137,7 +169,7 @@ void moving_state() {
   
   int distance = read_Ultrasonic();
   
-  if (distance < 20){
+  if (distance < 25){
     stop_motor();
     state = STOPPED;
     return;
@@ -158,12 +190,6 @@ void command_state(char cmd) {
   else if (cmd == 'L') {
     Turn_Left();
   }
-
-  delay(300);
-  move_forward();
-  
-  state = MOVING; // 회전 후 전진 상태
-
 }
 
 void loop() {
